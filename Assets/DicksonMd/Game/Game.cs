@@ -1,21 +1,53 @@
+using System;
 using System.Linq;
 using System.Xml.Schema;
 using DicksonMd.Extensions;
+using DicksonMd.UI;
+using Fusion;
 using UnityEngine;
+using UnityEngine.Serialization;
+using UnityEngine.XR.ARFoundation;
 
 namespace DicksonMd.Game
 {
-    public class Game : MonoBehaviour
+    public class Game : NetworkBehaviour
     {
         public TrackedCity city;
         public NpcSpawner npcSpawner;
+
+        public ARTrackedImageManager arTrackedImageManager;
+
+        [SerializeField]
+        public Logger logger;
+        private VariableWatcherRow _variableWatcherRow;
+        private VariableWatcherRow _variableWatcherRow2;
+        [SerializeField]
+        private VariableWatcher variableWatcher;
 
         // Start is called before the first frame update
         void Start()
         {
             city = FindObjectOfType<TrackedCity>();
-            if (city) StartGame(city);
+            if (city) SetCity(city);
 
+            StartTrackingAr();
+        }
+
+        public void SetCity(TrackedCity c)
+        {
+            if (!c) throw new Exception($"{nameof(TrackedCity)} expected!@");
+            Debug.Log($"StartGame!!");
+            city = c;
+        }
+
+        public void StartGame()
+        {
+            logger.Log($"Game.StartGame!!");
+            
+            transform.SetParent(city.transform, false);
+            npcSpawner.SpawnNpcs();
+            
+            
             var fingerprints = npcSpawner.spawnParent.GetComponentsInChildren<Npc>()
                 .Select(x => x.GetFingerprint())
                 .ToList();
@@ -37,16 +69,40 @@ namespace DicksonMd.Game
                     : $"NO Duplicate NPCs created after '{Npc.countRerolls}' rerolls");
         }
 
-        public void StartGame(TrackedCity c)
+        public void StartTrackingAr()
         {
-            city = c;
-            transform.SetParent(city.transform, false);
-            npcSpawner.SpawnNpcs();
+            if (logger)
+                logger.Log($"arTrackedImageManager.trackables.count {arTrackedImageManager.trackables.count}", true);
+            foreach (var trackable in arTrackedImageManager.trackables)
+            {
+                Debug.Log("First Trackable found!");
+                if (!city) SetCity(trackable.GetComponent<TrackedCity>());
+                break;
+            }
+
+            arTrackedImageManager.trackedImagesChanged += args =>
+            {
+                var trackable = args.added.FirstOrDefault();
+
+                if (trackable is not null)
+                {
+                    if (logger) logger.Log($"(trackedImagesChanged) {trackable.name}", true);
+                    if (!city) SetCity(trackable.GetComponent<TrackedCity>());
+                    transform.SetParent(trackable.transform, false);
+                }
+            };
         }
 
         // Update is called once per frame
         void Update()
         {
+            if (!_variableWatcherRow)
+            {
+                if (!variableWatcher) return;
+                _variableWatcherRow = FindObjectOfType<VariableWatcher>().Add("GamePosition", "");
+            }
+
+            if (_variableWatcherRow) _variableWatcherRow.SetValue(transform.localPosition.ToString("F3"));
         }
     }
 }

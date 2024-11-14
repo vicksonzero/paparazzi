@@ -1700,6 +1700,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2512387470528047739, guid: 48cb3fb68c91eb94999fd99957eb0cae,
+        type: 3}
+      propertyPath: m_RequestedTrackingOriginMode
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -1835,6 +1840,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 752725158252697128, guid: 7ff7077193f5f1847b7ba15c4af84270,
+        type: 3}
+      propertyPath: SortKey
+      value: 1214197320
+      objectReference: {fileID: 0}
     - target: {fileID: 1819482925173036540, guid: 7ff7077193f5f1847b7ba15c4af84270,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1885,6 +1895,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3194846225057767983, guid: 7ff7077193f5f1847b7ba15c4af84270,
+        type: 3}
+      propertyPath: SortKey
+      value: 2654496635
+      objectReference: {fileID: 0}
+    - target: {fileID: 3649342478130920879, guid: 7ff7077193f5f1847b7ba15c4af84270,
+        type: 3}
+      propertyPath: logger
+      value: 
+      objectReference: {fileID: 673857032}
+    - target: {fileID: 3649342478130920879, guid: 7ff7077193f5f1847b7ba15c4af84270,
+        type: 3}
+      propertyPath: variableWatcher
+      value: 
+      objectReference: {fileID: 1566044683}
+    - target: {fileID: 3649342478130920879, guid: 7ff7077193f5f1847b7ba15c4af84270,
+        type: 3}
+      propertyPath: arTrackedImageManager
+      value: 
+      objectReference: {fileID: 331264288}
     - target: {fileID: 6209971200915782084, guid: 7ff7077193f5f1847b7ba15c4af84270,
         type: 3}
       propertyPath: m_Name
@@ -9308,6 +9338,7 @@ MonoBehaviour:
     type: 3}
   joystick: {fileID: 1075473928}
   trackingCity: {fileID: 0}
+  game: {fileID: 1977025214}
 --- !u!4 &1966931808
 Transform:
   m_ObjectHideFlags: 0
@@ -9478,6 +9509,18 @@ MonoBehaviour:
   Components:
   - {fileID: 1976924001}
   _guid: e411ad8b-8eab-4c7e-
+--- !u!114 &1977025214 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3649342478130920879, guid: 7ff7077193f5f1847b7ba15c4af84270,
+    type: 3}
+  m_PrefabInstance: {fileID: 355010341}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3a70ca656eb1fb41a56d14e2987daf0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &2001374502 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6402244310720262706, guid: 48cb3fb68c91eb94999fd99957eb0cae,

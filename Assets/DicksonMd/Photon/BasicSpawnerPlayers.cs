@@ -22,6 +22,9 @@ namespace DicksonMd.Photon
 
         public Joystick joystick;
         public Transform trackingCity;
+        
+        [SerializeField]
+        private Game.Game game;
 
         private void Start()
         {
@@ -48,6 +51,11 @@ namespace DicksonMd.Photon
                         });
                 // Keep track of the player avatars for easy access
                 _spawnedCharacters.Add(player, networkPlayerObject);
+
+                if (runner.IsServer)
+                {
+                    game.StartGame();
+                }
             }
         }
 

@@ -57,22 +57,26 @@ namespace DicksonMd.Game
         public void GetSideWalksFromCityPrefab(bool includeInactive = false)
         {
             Debug.Log($"GetSideWalksFromCityPrefab");
-            spawnBoxes.AddRange(game.city.GetComponentsInChildren<BoxCollider>(includeInactive)
-                .Where(x => x.gameObject.layer == LayerMask.NameToLayer("SideWalks")));
+            var boxColliders = game.city.GetComponentsInChildren<BoxCollider>(includeInactive)
+                .Where(x => x.gameObject.layer == LayerMask.NameToLayer("SideWalks"))
+                .ToList();
+            Debug.Log($"GetSideWalksFromCityPrefab {boxColliders.Count}");
+            spawnBoxes.AddRange(boxColliders);
 
-            spawnBoxes = spawnBoxes.Distinct().ToList();
+            spawnBoxes = spawnBoxes.Where(x => x).Distinct().ToList();
         }
 
         private void SpawnNpc()
         {
-            var npc = Instantiate(
+            var npcNo = game.Runner.Spawn(
                 npcPrefab,
                 Vector3.zero,
                 Quaternion.Euler(new Vector3(0, Random.Range(0, 360), 0)));
-            npc.gameObject.SetActive(false);
-            if (spawnParent) npc.transform.SetParent(spawnParent);
+            var npc = npcNo.GetComponent<Npc>();
+            npcNo.gameObject.SetActive(false);
+            if (spawnParent) npcNo.transform.SetParent(spawnParent, false);
 
-            var npcCapsule = npc.GetComponent<CapsuleCollider>();
+            var npcCapsule = npcNo.GetComponent<CapsuleCollider>();
             if (npcCapsule)
             {
                 if (spawnBoxWeights is null) UpdateSpawnBoxesWeightCache();
@@ -87,7 +91,8 @@ namespace DicksonMd.Game
                     var pos = spawnBox.bounds.RandomPointInside();
 
                     pos.y = spawnBox.bounds.min.y +
-                            npcCapsule.center.y;
+                            npcCapsule.height / 2;
+                    game.logger.Log($"[{npc.npcId}] pos.y = {pos.y - transform.position.y}");
                     var hasCollision = Physics.CheckCapsule(
                         npcCapsule.center + Vector3.up * (npcCapsule.height / 2),
                         npcCapsule.center + Vector3.down * (npcCapsule.height / 2),
@@ -98,8 +103,8 @@ namespace DicksonMd.Game
                     if (!hasCollision)
                     {
                         pos.y = spawnBox.bounds.min.y;
-                        npc.transform.position = pos;
-                        npc.gameObject.SetActive(true);
+                        npcNo.GetComponent<NetworkTransform>().Teleport(pos);
+                        npcNo.gameObject.SetActive(true);
                         isSuccess = true;
                         break;
                     }
@@ -112,12 +117,12 @@ namespace DicksonMd.Game
                 {
                     Debug.LogWarning($"SpawnNpc({Npc.globalNpcCount}): Failed after {retries} tries");
                     spawnFailedCount++;
-                    Destroy(npc.gameObject);
+                    Destroy(npcNo.gameObject);
                     return;
                 }
             }
 
-            npc.GetComponent<Npc>().RandomizeModels();
+            npc.RandomizeModels();
         }
 
         // Update is called once per frame
