@@ -6,6 +6,7 @@ using Unity.Jobs.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.XR.ARFoundation;
+using Random = UnityEngine.Random;
 
 namespace DicksonMd.Photon
 {
@@ -35,14 +36,18 @@ namespace DicksonMd.Photon
                 Vector3 spawnPosition =
                     new Vector3((player.RawEncoded % runner.Config.Simulation.PlayerCount) * 3, 0, 0);
                 spawnPosition *= 0.01f;
-                
+
                 _logger.Log($"spawnPosition = {spawnPosition.ToString("F3")}", true);
-                
+
                 NetworkObject networkPlayerObject =
-                    runner.Spawn(_playerPrefab, spawnPosition, Quaternion.identity, player);
+                    runner.Spawn(_playerPrefab, spawnPosition, Quaternion.identity, player,
+                        (r, obj) =>
+                        {
+                            _logger.Log($"(onBeforeSpawned) {obj.Name}");
+                            obj.GetComponent<PlayerColor>().Color = Random.ColorHSV();
+                        });
                 // Keep track of the player avatars for easy access
                 _spawnedCharacters.Add(player, networkPlayerObject);
-
             }
         }
 
