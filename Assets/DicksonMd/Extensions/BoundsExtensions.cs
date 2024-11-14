@@ -14,13 +14,13 @@ namespace DicksonMd.Extensions
         {
             return bounds.size.x * bounds.size.y * bounds.size.z;
         }
-        
-        public static Vector3 RandomPointInside(this Bounds bounds)
+
+        public static Vector3 RandomPointInside(this BoxCollider collider)
         {
             return new Vector3(
-                Random.Range(bounds.min.x, bounds.max.x),
-                Random.Range(bounds.min.y, bounds.max.y),
-                Random.Range(bounds.min.z, bounds.max.z)
+                Random.Range(-collider.size.x / 2 - collider.center.x, collider.size.x / 2 + collider.center.x),
+                Random.Range(-collider.size.y / 2 - collider.center.y, collider.size.y / 2 + collider.center.y),
+                Random.Range(-collider.size.z / 2 - collider.center.z, collider.size.z / 2 + collider.center.z)
             );
         }
     }

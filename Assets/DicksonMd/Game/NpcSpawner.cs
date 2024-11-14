@@ -68,15 +68,7 @@ namespace DicksonMd.Game
 
         private void SpawnNpc()
         {
-            var npcNo = game.Runner.Spawn(
-                npcPrefab,
-                Vector3.zero,
-                Quaternion.Euler(new Vector3(0, Random.Range(0, 360), 0)));
-            var npc = npcNo.GetComponent<Npc>();
-            npcNo.gameObject.SetActive(false);
-            if (spawnParent) npcNo.transform.SetParent(spawnParent, false);
-
-            var npcCapsule = npcNo.GetComponent<CapsuleCollider>();
+            var npcCapsule = npcPrefab.GetComponent<CapsuleCollider>();
             if (npcCapsule)
             {
                 if (spawnBoxWeights is null) UpdateSpawnBoxesWeightCache();
@@ -88,11 +80,11 @@ namespace DicksonMd.Game
                     var spawnBoxIndex = DicksonRandom.FromWeights(spawnBoxWeights);
                     var spawnBox = spawnBoxes[spawnBoxIndex];
 
-                    var pos = spawnBox.bounds.RandomPointInside();
+                    var pos = spawnBox.RandomPointInside();
+                    pos = spawnBox.transform.TransformPoint(pos);
 
-                    pos.y = spawnBox.bounds.min.y +
-                            npcCapsule.height / 2;
-                    game.logger.Log($"[{npc.npcId}] pos.y = {pos.y - transform.position.y}");
+                    pos.y = spawnBox.transform.position.y;
+                    game.logger.Log($"[{Npc.globalNpcCount}] pos.y = {pos.y - transform.position.y}");
                     var hasCollision = Physics.CheckCapsule(
                         npcCapsule.center + Vector3.up * (npcCapsule.height / 2),
                         npcCapsule.center + Vector3.down * (npcCapsule.height / 2),
@@ -103,6 +95,16 @@ namespace DicksonMd.Game
                     if (!hasCollision)
                     {
                         pos.y = spawnBox.bounds.min.y;
+                        
+                        var npcNo = game.Runner.Spawn(
+                            npcPrefab,
+                            pos,
+                            Quaternion.Euler(new Vector3(0, Random.Range(0, 360), 0)));
+                        var npc = npcNo.GetComponent<Npc>();
+                        npc.RandomizeModels();
+                        npcNo.gameObject.SetActive(false);
+                        if (spawnParent) npcNo.transform.SetParent(spawnParent, false);
+                        
                         npcNo.GetComponent<NetworkTransform>().Teleport(pos);
                         npcNo.gameObject.SetActive(true);
                         isSuccess = true;
@@ -117,12 +119,10 @@ namespace DicksonMd.Game
                 {
                     Debug.LogWarning($"SpawnNpc({Npc.globalNpcCount}): Failed after {retries} tries");
                     spawnFailedCount++;
-                    Destroy(npcNo.gameObject);
                     return;
                 }
             }
 
-            npc.RandomizeModels();
         }
 
         // Update is called once per frame

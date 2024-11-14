@@ -3,6 +3,7 @@ using System.Linq;
 using System.Xml.Schema;
 using DicksonMd.Extensions;
 using DicksonMd.UI;
+using EditorCools;
 using Fusion;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -40,6 +41,7 @@ namespace DicksonMd.Game
             city = c;
         }
 
+        [Button]
         public void StartGame()
         {
             logger.Log($"Game.StartGame!!");
@@ -71,6 +73,11 @@ namespace DicksonMd.Game
 
         public void StartTrackingAr()
         {
+            if (!arTrackedImageManager)
+            {
+                Debug.LogWarning($"arTrackedImageManager not found! Skipping AR.");
+                return;
+            }
             if (logger)
                 logger.Log($"arTrackedImageManager.trackables.count {arTrackedImageManager.trackables.count}", true);
             foreach (var trackable in arTrackedImageManager.trackables)
