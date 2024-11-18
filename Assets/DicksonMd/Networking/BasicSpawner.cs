@@ -5,7 +5,7 @@ using Fusion.Sockets;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace DicksonMd.Photon
+namespace DicksonMd.Networking
 {
     public partial class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
     {

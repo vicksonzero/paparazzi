@@ -8,6 +8,7 @@ using Fusion;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.XR.ARFoundation;
+using Logger = DicksonMd.Networking.Logger;
 
 namespace DicksonMd.Game
 {

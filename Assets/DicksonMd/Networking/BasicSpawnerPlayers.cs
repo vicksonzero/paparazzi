@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using Fusion;
-using Unity.Jobs.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.XR.ARFoundation;
 using Random = UnityEngine.Random;
 
-namespace DicksonMd.Photon
+namespace DicksonMd.Networking
 {
     public partial class BasicSpawner
     {
@@ -22,7 +18,7 @@ namespace DicksonMd.Photon
 
         public Joystick joystick;
         public Transform trackingCity;
-        
+
         [SerializeField]
         private Game.Game game;
 
@@ -75,7 +71,7 @@ namespace DicksonMd.Photon
             var data = new NetworkInputData();
             var inputVector = moveActionAsset["Move"].ReadValue<Vector2>();
 
-            data.direction = joystick.isDragging
+            data.direction = joystick && joystick.isDragging
                 ? new Vector3(joystick.value.x, 0, joystick.value.y)
                 : new Vector3(inputVector.x, 0, inputVector.y);
             // if (.GetKey(KeyCode.W))

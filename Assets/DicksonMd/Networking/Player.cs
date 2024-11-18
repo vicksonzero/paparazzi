@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Linq;
 using DicksonMd.UI;
@@ -6,7 +5,7 @@ using Fusion;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 
-namespace DicksonMd.Photon
+namespace DicksonMd.Networking
 {
     public class Player : NetworkBehaviour
     {
@@ -27,7 +26,8 @@ namespace DicksonMd.Photon
         private void Start()
         {
             if (!arTrackedImageManager) arTrackedImageManager = FindObjectOfType<ARTrackedImageManager>();
-
+            if (!arTrackedImageManager) return;
+            
             _logger.Log($"arTrackedImageManager.trackables.count {arTrackedImageManager.trackables.count}", true);
             foreach (var trackable in arTrackedImageManager.trackables)
             {

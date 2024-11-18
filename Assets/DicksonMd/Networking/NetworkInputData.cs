@@ -1,7 +1,7 @@
 ﻿using Fusion;
 using UnityEngine;
 
-namespace DicksonMd.Photon
+namespace DicksonMd.Networking
 {
     public struct NetworkInputData : INetworkInput
     {
