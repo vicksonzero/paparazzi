@@ -11,6 +11,9 @@ namespace DicksonMd.Networking
         [SerializeField]
         private NetworkPrefabRef _playerPrefab;
 
+        [SerializeField]
+        private NetworkPrefabRef _pcPlayerPrefab;
+
         private Dictionary<PlayerRef, NetworkObject> _spawnedCharacters = new Dictionary<PlayerRef, NetworkObject>();
 
         [SerializeField]
@@ -22,6 +25,8 @@ namespace DicksonMd.Networking
         [SerializeField]
         private Game.Game game;
 
+        public Transform spawnPoint;
+
         private void Start()
         {
         }
@@ -31,22 +36,39 @@ namespace DicksonMd.Networking
             _logger.Log($"OnPlayerJoined {player.PlayerId}", true);
             if (runner.IsServer)
             {
-                // Create a unique position for the player
-                Vector3 spawnPosition =
-                    new Vector3((player.RawEncoded % runner.Config.Simulation.PlayerCount) * 3, 0, 0);
-                spawnPosition *= 0.01f;
+                if (_playerPrefab.IsValid)
+                {
+                    // Create a unique position for the player
+                    Vector3 spawnPosition =
+                        new Vector3((player.RawEncoded % runner.Config.Simulation.PlayerCount) * 3, 0, 0);
+                    spawnPosition *= 0.01f;
 
-                _logger.Log($"spawnPosition = {spawnPosition.ToString("F3")}", true);
+                    _logger.Log($"spawnPosition = {spawnPosition.ToString("F3")}", true);
 
-                NetworkObject networkPlayerObject =
-                    runner.Spawn(_playerPrefab, spawnPosition, Quaternion.identity, player,
-                        (r, obj) =>
-                        {
-                            _logger.Log($"(onBeforeSpawned) {obj.Name}");
-                            obj.GetComponent<PlayerColor>().Color = Random.ColorHSV();
-                        });
-                // Keep track of the player avatars for easy access
-                _spawnedCharacters.Add(player, networkPlayerObject);
+                    NetworkObject networkPlayerObject =
+                        runner.Spawn(_playerPrefab, spawnPosition, Quaternion.identity, player,
+                            (r, obj) =>
+                            {
+                                _logger.Log($"(onBeforeSpawned) {obj.Name}");
+                                obj.GetComponent<PlayerColor>().Color = Random.ColorHSV();
+                            });
+                    // Keep track of the player avatars for easy access
+                    _spawnedCharacters.Add(player, networkPlayerObject);
+                }
+
+                if (_pcPlayerPrefab.IsValid)
+                {
+                    NetworkObject networkPlayerObject =
+                        runner.Spawn(_pcPlayerPrefab, spawnPoint.position, spawnPoint.rotation, player,
+                            (r, obj) =>
+                            {
+                                _logger.Log($"(onBeforeSpawned) {obj.Name}");
+                                obj.GetComponent<PlayerColor>().Color = Random.ColorHSV();
+                            });
+                    // Keep track of the player avatars for easy access
+                    _spawnedCharacters.Add(player, networkPlayerObject);
+                }
+
 
                 if (runner.IsServer)
                 {
